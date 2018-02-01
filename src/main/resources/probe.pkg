@@ -1,0 +1,170 @@
+<package info>
+   name = probe-name-string
+   description =  Monitor availability and reachability for robots and devices
+   copyright = Copyright 2018, CA. All rights reserved.
+   group = system
+   author = CA Technologies
+   version = 1.00
+   build = 01
+</package info>
+
+<pre_install>
+   update = probe-name-string
+   post-install = $NIM_JRE_HOME/bin/java -jar probes/system/probe-name-string/pre_install/packageCleaner.jar probes/system/probe-name-string/pre_install/pre_install.xml
+   <files>
+      <packageCleaner.jar>
+         type = binary
+         access = 0644
+         dir = probes/system/probe-name-string/pre_install
+      </packageCleaner.jar>
+      <pre_install.xml>
+         type = text
+         access = 0644
+         dir = probes/system/probe-name-string/pre_install
+      </pre_install.xml>
+    </files>
+</pre_install>
+
+<generic>
+   name = probe-name-string
+   type = probe-name-string
+   update = probe-name-string
+   <probe-name-string>
+      description =  Monitor availability and reachability for robots and devices
+      group = system
+      active = yes
+      preserve_state = yes
+      type = daemon
+      timespec =
+      workdir = probes/system/probe-name-string
+      command = <startup java>
+      arguments = -jar probe-name-string.jar
+      config = probe-name-string.cfg
+      logfile = probe-name-string.log
+      datafile =
+      security = write
+   </probe-name-string>
+   <files>
+      <probe-name-string.cfx>
+         type = config
+         access = 0644
+         dir = probes/system/probe-name-string
+      </probe-name-string.cfx>
+      <probe-name-string.jar>
+         type = binary
+         access = 0644
+         dir = probes/system/probe-name-string
+      </probe-name-string.jar>
+   </files>
+</generic>
+
+<locales>
+   <files>
+      <locales.zip>
+         type = config
+         access = 0644
+         dir = probes/system/probe-name-string/locales
+      </locales.zip>
+   </files>
+</locales>
+
+<win32>
+   name = probe-name-string
+   OStype = windows
+   OS = win32
+   update = probe-name-string
+   <probe-name-string>
+      description =  Monitor availability and reachability for robots and devices
+      group = system
+      active = yes
+      type = daemon
+      timespec =
+      workdir = probes/system/probe-name-string
+      command = <startup java>
+      arguments = -jar probe-name-string.jar
+      config = probe-name-string.cfg
+      logfile = probe-name-string.log
+      datafile =
+      security = admin
+   </probe-name-string>
+   <dependencies>
+      <Robot>
+         version = 5.23
+         type = ge
+      </Robot>
+      <java_jre>
+         version = 1.6.0
+         type = ge
+      </java_jre>
+   </dependencies>
+   <files>
+   </files>
+</win32>
+
+<SOLARIS>
+   name = probe-name-string
+   OStype = unix
+   OS = SOLARIS
+   update = probe-name-string
+   <probe-name-string>
+      description =  Monitor availability and reachability for robots and devices
+      group = system
+      active = yes
+      preserve_state = yes
+      type = daemon
+      timespec =
+      workdir = probes/system/probe-name-string
+      command = <startup java>
+      arguments = -jar probe-name-string.jar
+      config = probe-name-string.cfg
+      logfile = probe-name-string.log
+      datafile =
+      security = admin
+   </probe-name-string>
+   <dependencies>
+      <Robot>
+         version = 5.23
+         type = ge
+      </Robot>
+      <jre_solaris>
+         version = 1.6.0
+         type = ge
+      </jre_solaris>
+   </dependencies>
+   <files>
+   </files>
+</SOLARIS>
+
+<LINUX>
+   name = probe-name-string
+   OStype = unix
+   OS = LINUX
+   update = probe-name-string
+   <probe-name-string>
+      description =  Monitor availability and reachability for robots and devices
+      group = system
+      active = yes
+      preserve_state = yes
+      type = daemon
+      timespec =
+      workdir = probes/system/probe-name-string
+      command = <startup java>
+      arguments = -jar probe-name-string.jar
+      config = probe-name-string.cfg
+      logfile = probe-name-string.log
+      datafile =
+      security = admin
+   </probe-name-string>
+   <dependencies>
+      <Robot>
+         version = 5.23
+         type = ge
+      </Robot>
+      <java_jre>
+         version = 1.6.0
+         type = ge
+      </java_jre>
+   </dependencies>
+   <files>
+   </files>
+</LINUX>

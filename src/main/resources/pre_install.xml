@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<packageCleanSpec>
+    <packageDir>probes/system/availability_monitor</packageDir>
+    <logFileName>pre_install.log</logFileName>
+    <filesToDelete>
+        <filePattern>
+            <pattern>.*</pattern>
+            <excludePattern>.*\.cf.</excludePattern>
+            <excludePattern>pre_install.*</excludePattern>
+            <excludePattern>.*\.log</excludePattern>
+            <excludePattern>archivedFiles</excludePattern>
+        </filePattern>
+    </filesToDelete>
+    <filesToArchive>
+        <file>availability_monitor.cfg</file>
+        <file>availability_monitor.log</file>
+        <file>_availability_monitor.log</file>
+    </filesToArchive>
+</packageCleanSpec>

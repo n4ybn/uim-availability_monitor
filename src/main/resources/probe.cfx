@@ -1,0 +1,9 @@
+<setup>
+   loglevel = 3
+   interval = 60
+</setup>
+<startup>
+   options = -Xms32m -Xmx512m -Duser.language=en -Duser.country=US
+</startup>
+<resources>
+</resources>
