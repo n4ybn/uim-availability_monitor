@@ -55,11 +55,21 @@ public class ProbeMain {
         ArrayList<Robot> robotList = Utils.getRobots();
         for (Robot r : robotList) {
             ConfigurationItem ci = new ConfigurationItem("10.2", r.getRobotName(), r.getRobotName());
+            // Check ip address for localhost, this can prevent proper communication
+            if (r.getIpAddress().equalsIgnoreCase("127.0.0.1")) {
+                String downMessage = "Robot ip address detected as 127.0.0.1, please configure the robot_ip parameter";
+                NimAlarm downAlarm = new NimAlarm(NimAlarm.NIML_MAJOR, downMessage, "1.1.1", r.getRobotName()+"/127.0.0.1", r.getRobotName(), ci, "1:17");
+                String nimid = downAlarm.send();
+                logger.info("Alarm created with NIMID: " + nimid);
+                downAlarm.close();
+            }
+
             // insert into CM_CONFIGURATION_ITEM_METRIC_DEFINITION VALUES ('10.2:98', 'Robot Availability', 'state', '10.2', NULL);
             // insert into CM_CONFIGURATION_ITEM_METRIC_DEFINITION VALUES ('10.2:99', 'Robot Reachability', 'state', '10.2', NULL);
             if (r.isActive()) {
                 HashMap<String, Probe> probeMap = new HashMap<>();
                 try {
+
                     probeMap =  Utils.getProbeList(r.getRobotAddress());
                     // Check the spooler and hdb
                     Probe spooler = probeMap.get("spooler");
