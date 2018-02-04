@@ -1,11 +1,12 @@
 package com.ca.uim.field;
 
-import com.nimsoft.nimbus.NimException;
-import com.nimsoft.nimbus.NimLog;
-import com.nimsoft.nimbus.NimRequest;
-import com.nimsoft.nimbus.PDS;
+import com.nimsoft.nimbus.*;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 
 public class Utils {
     static private NimLog logger = NimLog.getLogger(Utils.class);
@@ -24,7 +25,7 @@ public class Utils {
             getRobotsRequest = new NimRequest("hub", "getrobots");
             getRobotsResponse = getRobotsRequest.send();
         } catch (NimException e) {
-            logger.error("Failed to retrieve the list of robots from hub. We will skip discovering this hub for now. Cause: " + e.getMessage());
+            logger.error("Failed to retrieve the list of robots from hub. This probe will not work. Cause: " + e.getMessage());
         } finally {
             if (getRobotsRequest != null) {
                 getRobotsRequest.disconnect();
@@ -53,5 +54,97 @@ public class Utils {
             }
         }
         return robots;
+    }
+
+    /**
+     * Get a list of probes deployed on a given robot and add the following information
+     * active, state and name and port
+     * @param robotAddress
+     * @return HashMap<String, Probe>
+     * @throws NimException
+     */
+    public static HashMap<String, Probe> getProbeList(String robotAddress) throws NimException {
+        HashMap<String, Probe> probeMap = new HashMap<>();
+        logger.debug("Getting probe list from: " + robotAddress);
+        NimRequest getProbesRequest = null;
+        PDS getProbesResponse = null;
+        try {
+            getProbesRequest = new NimRequest(robotAddress + "/controller", "probe_list");
+            getProbesResponse = getProbesRequest.send();
+        } catch (NimException e) {
+            logger.error("Failed to retrieve the list of probes from robot " + robotAddress + ". Cause: " + e.getMessage());
+        } finally {
+            if (getProbesRequest != null) {
+                getProbesRequest.disconnect();
+                getProbesRequest.close();
+            }
+        }
+        try {
+            if (getProbesResponse != null) { // ok, we received a list of probes from the robot
+                Enumeration<String> p = getProbesResponse.keys();
+                while (p.hasMoreElements()) {
+                    String probeKey = p.nextElement();
+                    PDS probeList = getProbesResponse.getPDS(probeKey);
+                    String probeName = probeList.getString("name");
+                    String state = probeList.getString("process_state");
+                    int active = probeList.getInt("active");
+                    int port = probeList.getInt("port");
+                    Probe probe = new Probe();
+                    probe.setProbeName(probeName);
+                    probe.setState(state);
+                    probe.setPort(port);
+                    if (active == 1) {
+                        probe.setActive(true);
+                    } else {
+                        probe.setActive(false);
+                    }
+                    probeMap.put(probeName, probe);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while extracting PDS elements from probe_list");
+        }
+        return probeMap;
+    }
+
+    /**
+     * Check if a probe is active
+     * @param probe
+     * @return Boolean
+     */
+    public static Boolean checkProbeHealth(Probe probe) {
+        Boolean isHealthy = true;
+        if (!probe.getActive()) {
+            isHealthy = false;
+            return isHealthy;
+        }
+
+        return isHealthy;
+    }
+
+    /**
+     * Get the probe configuration
+     * @return NimConfig
+     */
+    public static NimConfig getProbeConfiguration() {
+        NimConfig config = null;
+        try {
+            config = NimConfig.getInstance();
+        } catch (NimException e) {
+            logger.error("Failed while retrieving NimConfig.getInstance()");
+        }
+        return config;
+    }
+
+    public static boolean isRobotReachable(String address) {
+        boolean isReachable = false;
+        try {
+            InetAddress inetAddress = InetAddress.getByName(address);
+            isReachable = inetAddress.isReachable(5000);
+            logger.debug(address+" is reachable? "+isReachable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isReachable;
     }
 }
