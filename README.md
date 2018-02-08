@@ -18,9 +18,11 @@ The goal of this probe will be to hopefully improve the collection of availabili
 * The metric vales are either a 1 (online) or 0 (offline)
 * Sends alarm if robot ip address is equal to 127.0.0.1
 * Sends alarm if hdb or spooler is in an inactive state
+* Current alarms are **NOT** automatically cleared
 
 ### TODO
 * CABI Report
+* Alarms automatically cleared
 * Automated SLA/SLO Creation
 * Robot List Management by Callback(s)
 * HTML 5 Dashboard
