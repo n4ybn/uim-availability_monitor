@@ -69,13 +69,12 @@ public class ProbeMain {
             if (r.isActive()) {
                 HashMap<String, Probe> probeMap = new HashMap<>();
                 try {
-
                     probeMap =  Utils.getProbeList(r.getRobotAddress());
                     // Check the spooler and hdb
                     Probe spooler = probeMap.get("spooler");
                     Probe hdb = probeMap.get("hdb");
                     if (Utils.checkProbeHealth(spooler) || Utils.checkProbeHealth(hdb)) {
-                        logger.info("Robot: "+r.getRobotName()+" is active and healthy, moving on");
+                        //logger.info("Robot: "+r.getRobotName()+" is active and healthy, moving on");
                         logger.debug("Setting availability and reachability to 1 for robot: "+r.getRobotName());
                         NimQoS aQos = new NimQoS(ci, "98", "QOS_ROBOT_AVAILABILITY", false);
                         if (runOnce) {
@@ -90,7 +89,7 @@ public class ProbeMain {
                         aQos.close();
                         NimQoS rQos = new NimQoS(ci, "99", "QOS_ROBOT_REACHABILITY", false);
                         if (runOnce) {
-                            rQos.setDefinition("QOS_NETWORK", "Status of robot availability", "Status", "status");
+                            rQos.setDefinition("QOS_NETWORK", "Status of robot reachability", "Status", "status");
                         }
                         rQos.setSource(r.getRobotName());
                         rQos.setSampleRate(INTERVAL);
@@ -100,6 +99,32 @@ public class ProbeMain {
                         rQos.close();
                     } else {
                         logger.info("Spooler or HDB not active on robot: "+r.getRobotName()+". Please validate probe security");
+                        String downMessage = "HDB or Spooler is not active, please validate security on these probes";
+                        NimAlarm downAlarm = new NimAlarm(NimAlarm.NIML_MAJOR, downMessage, "1.1.1", r.getRobotName()+"/validate_security", r.getRobotName(), ci, "1:17");
+                        String nimid = downAlarm.send();
+                        logger.info("Alarm created with NIMID: " + nimid);
+                        downAlarm.close();
+                        NimQoS aQos = new NimQoS(ci, "98", "QOS_ROBOT_AVAILABILITY", false);
+                        if (runOnce) {
+                            aQos.setDefinition("QOS_NETWORK", "Status of robot availability", "Status", "status");
+                        }
+
+                        aQos.setSource(r.getRobotName());
+                        aQos.setSampleRate(INTERVAL);
+                        aQos.setTarget(r.getRobotName());
+                        aQos.setValue(0);
+                        aQos.send();
+                        aQos.close();
+                        NimQoS rQos = new NimQoS(ci, "99", "QOS_ROBOT_REACHABILITY", false);
+                        if (runOnce) {
+                            rQos.setDefinition("QOS_NETWORK", "Status of robot reachability", "Status", "status");
+                        }
+                        rQos.setSource(r.getRobotName());
+                        rQos.setSampleRate(INTERVAL);
+                        rQos.setTarget(r.getRobotName());
+                        rQos.setValue(1);
+                        rQos.send();
+                        rQos.close();
                     }
                 } catch (Exception e) {
                     logger.error("Error while retrieving the probe list from "+r.getRobotName());
